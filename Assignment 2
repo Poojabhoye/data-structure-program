@@ -1,0 +1,179 @@
+#include <iostream>
+using namespace std;
+
+class SMS {
+public:
+    int sno;
+    string name, add;
+    int CET_score;
+    SMS *lc, *rc;
+
+    SMS(int s, string n, int score, string a) {
+        sno = s;
+        name = n;
+        CET_score = score;
+        add = a;
+        lc = rc = NULL;
+    }
+
+    void insert(SMS*& root, SMS* next);
+    void inorder(SMS* root);
+    void displayIIT(SMS* root);
+    void displayOther(SMS* root);
+    void modify(SMS* root, int key);
+    void search(SMS* root, int key);
+    void findTopper(SMS* root);
+    void freeTree(SMS* root);
+};
+
+
+void SMS::insert(SMS*& root, SMS* next) {
+    if (root == NULL) {
+        root = next;
+        return;
+    }
+    if (next->CET_score < root->CET_score)
+        insert(root->lc, next);
+    else
+        insert(root->rc, next);
+}
+
+
+void SMS::inorder(SMS* root) {
+    if (root != NULL) {
+        inorder(root->lc);
+        cout << "Sno: " << root->sno << "\tName: " << root->name
+             << "\tCET Score: " << root->CET_score << "\tAddress: " << root->add << endl;
+        inorder(root->rc);
+    }
+}
+
+
+void SMS::displayIIT(SMS* root) {
+    if (root != NULL) {
+        displayIIT(root->lc);
+        if (root->CET_score >= 90)
+            cout << "Sno: " << root->sno << "\tName: " << root->name
+                 << "\tCET Score: " << root->CET_score << "\tAddress: " << root->add << endl;
+        displayIIT(root->rc);
+    }
+}
+
+void SMS::displayOther(SMS* root) {
+    if (root != NULL) {
+        displayOther(root->lc);
+        if (root->CET_score < 90)
+            cout << "Sno: " << root->sno << "\tName: " << root->name
+                 << "\tCET Score: " << root->CET_score << "\tAddress: " << root->add << endl;
+        displayOther(root->rc);
+    }
+}
+
+
+void SMS::modify(SMS* root, int key) {
+    if (root == NULL) {
+        cout << "Student not found.\n";
+        return;
+    }
+    if (root->sno == key) {
+        cout << "Enter new details (Name, CET Score, Address): ";
+        cin >> root->name >> root->CET_score >> root->add;
+        cout << "Student details updated successfully!\n";
+    } else {
+        modify(root->lc, key);
+        modify(root->rc, key);
+    }
+}
+
+
+void SMS::search(SMS* root, int key) {
+    if (root == NULL) {
+        cout << "Student not found.\n";
+        return;
+    }
+    if (root->sno == key) {
+        cout << "Sno: " << root->sno << "\tName: " << root->name
+             << "\tCET Score: " << root->CET_score << "\tAddress: " << root->add << endl;
+    } else {
+        search(root->lc, key);
+        search(root->rc, key);
+    }
+}
+
+
+void SMS::findTopper(SMS* root) {
+    if (root == NULL) {
+        cout << "No students available.\n";
+        return;
+    }
+    SMS* current = root;
+    while (current->rc != NULL) {
+        current = current->rc;  
+    }
+    cout << "Topper Details:\n";
+    cout << "Sno: " << current->sno << "\tName: " << current->name
+         << "\tCET Score: " << current->CET_score << "\tAddress: " << current->add << endl;
+}
+
+
+void SMS::freeTree(SMS* root) {
+    if (root != NULL) {
+        freeTree(root->lc);
+        freeTree(root->rc);
+        delete root;
+    }
+}
+
+int main() {
+    SMS* root = NULL;
+    int choice, sno, CET_score;
+    string name, add;
+
+    do {
+        cout << "\nMenu:\n1. Insert Student\n2. Display Inorder\n";
+        cout << "3. Display IIT Students\n4. Display Other Students\n5. Modify Student Details\n";
+        cout << "6. Search Student\n7. Find Topper\n0. Exit\nEnter choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                cout << "Enter the student details (Sno, Name, CET Score, Address): ";
+                cin >> sno >> name >> CET_score >> add;
+                root->insert(root, new SMS(sno, name, CET_score, add));
+                break;
+            case 2:
+                cout << "Displaying students (Inorder):\n";
+                root->inorder(root);
+                break;
+            case 3:
+                cout << "Displaying IIT students (CET Score ≥ 90):\n";
+                root->displayIIT(root);
+                break;
+            case 4:
+                cout << "Displaying non-IIT students (CET Score < 90):\n";
+                root->displayOther(root);
+                break;
+            case 5:
+                cout << "Enter student Sno to modify: ";
+                cin >> sno;
+                root->modify(root, sno);
+                break;
+            case 6:
+                cout << "Enter student Sno to search: ";
+                cin >> sno;
+                root->search(root, sno);
+                break;
+            case 7:
+                root->findTopper(root);
+                break;
+            case 0:
+                root->freeTree(root);
+                cout << "Exiting...\n";
+                break;
+            default:
+                cout << "Invalid choice! Try again.\n";
+        }
+    } while (choice != 0);
+
+return 0;
+}
