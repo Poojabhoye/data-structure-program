@@ -1,0 +1,120 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+class GR {
+    int v, e, fuel;  // Number of cities, edges, and fuel cost
+    string city[100]; // Array to store city names
+    int adj[100][100]; // Adjacency matrix for fuel cost
+    GR *next;
+
+public:
+    GR() {
+        next = NULL;
+    }
+
+    void create();
+    void addedge();
+    void display();
+};
+
+void GR::create() {
+    cout << "Enter the total number of cities: ";
+    cin >> v;
+
+    cout << "Enter the names of the cities:\n";
+    for (int i = 0; i < v; i++) {
+        cin >> city[i];
+    }
+
+    // Initialize adjacency matrix with 0 (no direct path)
+    for (int i = 0; i < v; i++) {
+        for (int j = 0; j < v; j++) {
+            adj[i][j] = 0;
+        }
+    }
+}
+
+void GR::addedge() {
+    cout << "Enter the total number of edges: ";
+    cin >> e;
+
+    for (int i = 0; i < e; i++) {
+        string s, d;
+        int fuel_cost;
+
+        cout << "Enter source city and destination city: ";
+        cin >> s >> d;
+
+        cout << "Enter the fuel required: ";
+        cin >> fuel_cost;
+
+        int srcIdx = -1, destIdx = -1;
+
+        // Find the indices of source and destination cities
+        for (int j = 0; j < v; j++) {
+            if (city[j] == s)
+                srcIdx = j;
+            if (city[j] == d)
+                destIdx = j;
+        }
+
+        if (srcIdx != -1 && destIdx != -1) {
+            adj[srcIdx][destIdx] = fuel_cost;
+            adj[destIdx][srcIdx] = fuel_cost; // Assuming undirected graph
+        } else {
+            cout << "Invalid city names! Try again.\n";
+        }
+    }
+}
+
+void GR::display() {
+    cout << "\nFuel cost adjacency matrix:\n";
+    cout << "   ";
+
+    for (int i = 0; i < v; i++) {
+        cout << city[i] << "\t";
+    }
+    cout << endl;
+
+    for (int i = 0; i < v; i++) {
+        cout << city[i] << "\t";
+        for (int j = 0; j < v; j++) {
+            cout << adj[i][j] << "\t";
+        }
+        cout << endl;
+    }
+}
+
+int main() {
+    GR g;
+    int choice;
+
+    do {
+        cout << "\n1. Create Data\n";
+        cout << "2. Add Edge\n";
+        cout << "3. Display Fuel Cost Matrix\n";
+        cout << "0. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                g.create();
+                break;
+            case 2:
+                g.addedge();
+                break;
+            case 3:
+                g.display();
+                break;
+            case 0:
+                cout << "Exiting program...\n";
+                break;
+            default:
+                cout << "Invalid choice! Try again.\n";
+        }
+    } while (choice != 0);
+
+    return 0;
+}
