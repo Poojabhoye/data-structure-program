@@ -1,0 +1,84 @@
+#include <iostream>
+#include <climits>
+using namespace std;
+
+class SSP {
+    int v; // Number of vertices
+    string loc[10]; // Location names
+    int adj[10][10]; // Adjacency matrix
+public:
+    void create();
+    void display_mat();
+    void short_path();
+};
+
+void SSP::create() {
+    cout << "Enter number of vertices: ";
+    cin >> v;
+    cout << "Enter location names:\n";
+    for (int i = 0; i < v; i++) {
+        cin >> loc[i];
+    }
+    cout << "Enter adjacency matrix:\n";
+    for (int i = 0; i < v; i++) {
+        for (int j = 0; j < v; j++) {
+            cin >> adj[i][j];
+        }
+    }
+}
+
+void SSP::display_mat() {
+    cout << "\nAdjacency Matrix:\n";
+    for (int i = 0; i < v; i++) {
+        for (int j = 0; j < v; j++) {
+            cout << adj[i][j] << " ";
+        }
+        cout << endl;
+    }
+}
+
+void SSP::short_path() {
+    int dist[10];
+    bool visited[10] = {false};
+    int src;
+    cout << "Enter source vertex index (0 to " << v-1 << "): ";
+    cin >> src;
+    
+    for (int i = 0; i < v; i++) {
+        dist[i] = INT_MAX;
+    }
+    dist[src] = 0;
+    
+    for (int count = 0; count < v - 1; count++) {
+        int minDist = INT_MAX, minIndex;
+        
+        for (int i = 0; i < v; i++) {
+            if (!visited[i] && dist[i] < minDist) {
+                minDist = dist[i];
+                minIndex = i;
+            }
+        }
+        
+        visited[minIndex] = true;
+        
+        for (int j = 0; j < v; j++) {
+            if (!visited[j] && adj[minIndex][j] && dist[minIndex] != INT_MAX &&
+                dist[minIndex] + adj[minIndex][j] < dist[j]) {
+                dist[j] = dist[minIndex] + adj[minIndex][j];
+            }
+        }
+    }
+    
+    cout << "\nShortest distances from source " << loc[src] << ":\n";
+    for (int i = 0; i < v; i++) {
+        cout << "To " << loc[i] << " - Distance: " << dist[i] << endl;
+    }
+}
+
+int main() {
+    SSP s;
+    s.create();
+    s.display_mat();
+    s.short_path();
+    return 0;
+}
