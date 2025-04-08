@@ -1,0 +1,111 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+class PS {
+    int v;  
+    string loc[10];  
+    int adj[10][10]; 
+public:
+    void accept();
+    void short_path();
+    void display_mat();
+};
+
+void PS::accept() {
+    cout << "Enter the total number of cities: ";
+    cin >> v;
+
+    cout << "Enter the names of the cities:\n";
+    for (int i = 0; i < v; i++) {
+        cin >> loc[i];
+    }
+
+    cout << "Enter the distances between cities (0 if same city, 999 if no direct path):\n";
+    for (int i = 0; i < v; i++) {
+        for (int j = 0; j < v; j++) {
+            if (i == j) {
+                adj[i][j] = 0;
+            } else {
+                cout << "Distance from " << loc[i] << " to " << loc[j] << ": ";
+                cin >> adj[i][j];
+            }
+        }
+    }
+}
+
+void PS::display_mat() {
+    cout << "\nAdjacency Matrix:\n   ";
+    for (int i = 0; i < v; i++) {
+        cout << loc[i] << "\t";
+    }
+    cout << endl;
+    for (int i = 0; i < v; i++) {
+        cout << loc[i] << "\t";
+        for (int j = 0; j < v; j++) {
+            cout << adj[i][j] << "\t";
+        }
+        cout << endl;
+    }
+}
+
+void PS::short_path() {
+    int dist[10], visited[10];
+    int start;
+
+    cout << "Enter the source city index (0 to " << v - 1 << "): ";
+    cin >> start;
+
+    for (int i = 0; i < v; i++) {
+        dist[i] = adj[start][i];
+        visited[i] = 0;
+    }
+
+    dist[start] = 0;
+    visited[start] = 1;
+
+    for (int count = 1; count < v - 1; count++) {
+        int min = 999, u = -1;
+        for (int i = 0; i < v; i++) {
+            if (!visited[i] && dist[i] < min) {
+                min = dist[i];
+                u = i;
+            }
+        }
+
+        visited[u] = 1;
+
+        for (int i = 0; i < v; i++) {
+            if (!visited[i] && (dist[u] + adj[u][i] < dist[i])) {
+                dist[i] = dist[u] + adj[u][i];
+            }
+        }
+    }
+
+    cout << "\nShortest distance from " << loc[start] << " to other cities:\n";
+    for (int i = 0; i < v; i++) {
+        if (i != start) {
+            cout << loc[start] << " to " << loc[i] << " = " << dist[i] << endl;
+        }
+    }
+}
+
+int main() {
+    PS s;
+    int choice;
+
+    do {
+        cout << "\nMenu:\n1. Accept Data\n2. Display Matrix\n3. Shortest Path\n4. Exit\nEnter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1: s.accept(); break;
+            case 2: s.display_mat(); break;
+            case 3: s.short_path(); break;
+            case 4: cout << "Exiting...\n"; break;
+            default: cout << "Invalid choice. Try again.\n";
+        }
+    } while (choice != 4);
+
+    return 0;
+}
