@@ -1,0 +1,112 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+class StudentHashTable {
+    int key[10];               // PRN numbers
+    string name[10];
+    string address[10];
+    int marks10[10];           // 10th marks
+    int marks12[10];           // 12th marks
+    int chain[10];             // For chaining
+    int n;                     // Number of students
+
+public:
+    StudentHashTable() {
+        for (int i = 0; i < 10; i++) {
+            key[i] = -1;
+            chain[i] = -2;
+            name[i] = "";
+            address[i] = "";
+            marks10[i] = -1;
+            marks12[i] = -1;
+        }
+        n = 0;
+    }
+
+    void createTable() {
+        cout << "Enter total number of students (max 10): ";
+        cin >> n;
+    }
+
+    void insert() {
+        int prn;
+        for (int i = 0; i < n; i++) {
+            cout << "\nEnter PRN for student " << i + 1 << ": ";
+            cin >> prn;
+
+            int loc = prn % 10;
+
+            if (key[loc] == -1) {
+                // Empty slot
+                key[loc] = prn;
+                cout << "Enter name, address, 10th marks and 12th marks: ";
+                cin >> name[loc] >> address[loc] >> marks10[loc] >> marks12[loc];
+            } else {
+                // Collision
+                int temp = loc;
+                while (chain[temp] != -2) {
+                    temp = chain[temp];
+                }
+
+                int pos = (loc + 1) % 10;
+                while (pos != loc && key[pos] != -1) {
+                    pos = (pos + 1) % 10;
+                }
+
+                if (key[pos] == -1) {
+                    key[pos] = prn;
+                    cout << "Enter name, address, 10th marks and 12th marks: ";
+                    cin >> name[pos] >> address[pos] >> marks10[pos] >> marks12[pos];
+                    chain[temp] = pos;
+                } else {
+                    cout << "Hash table is full. Could not insert PRN: " << prn << endl;
+                }
+            }
+        }
+    }
+
+    void display() {
+        cout << "\nIndex\tPRN\tName\tAddress\t10th\t12th\tChain\n";
+        for (int i = 0; i < 10; i++) {
+            if (key[i] != -1)
+                cout << i << "\t" << key[i] << "\t" << name[i] << "\t" << address[i]
+                     << "\t" << marks10[i] << "\t" << marks12[i] << "\t" << chain[i] << endl;
+            else
+                cout << i << "\t-\t-\t-\t-\t-\t" << chain[i] << endl;
+        }
+    }
+
+    void search() {
+        int prn;
+        cout << "\nEnter PRN to search: ";
+        cin >> prn;
+        int index = prn % 10;
+
+        while (index != -2) {
+            if (key[index] == prn) {
+                cout << "\n✅ Record Found:\n";
+                cout << "PRN: " << key[index]
+                     << "\nName: " << name[index]
+                     << "\nAddress: " << address[index]
+                     << "\n10th Marks: " << marks10[index]
+                     << "\n12th Marks: " << marks12[index] << endl;
+                return;
+            }
+            index = chain[index];
+        }
+
+        cout << "\n❌ Record not found.\n";
+    }
+};
+
+int main() {
+    StudentHashTable obj;
+
+    obj.createTable();
+    obj.insert();
+    obj.display();
+    obj.search();
+
+    return 0;
+}
