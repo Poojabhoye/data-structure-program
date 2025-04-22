@@ -1,0 +1,157 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Student {
+public:
+    string PRN;
+    string name;
+
+    Student() {
+        PRN = "";
+        name = "";
+    }
+};
+
+class HashTable {
+    Student table[10];
+
+public:
+    void initialize() {
+        for (int i = 0; i < 10; i++) {
+            table[i].PRN = "";
+            table[i].name = "";
+        }
+    }
+
+    int hashFunction(string prn) {
+        int sum = 0;
+        for (char ch : prn) {
+            sum += int(ch);
+        }
+        return sum % 10;
+    }
+
+    void insert() {
+        int n;
+        cout << "Enter number of records: ";
+        cin >> n;
+
+        for (int i = 0; i < n; i++) {
+            string prn_input, name_input;
+            cout << "Enter PRN: ";
+            cin >> prn_input;
+            cout << "Enter Name: ";
+            cin >> name_input;
+
+            int loc = hashFunction(prn_input);
+            int originalLoc = loc;
+            bool inserted = false;
+
+            do {
+                if (table[loc].PRN == "") {
+                    table[loc].PRN = prn_input;
+                    table[loc].name = name_input;
+                    inserted = true;
+                    break;
+                }
+                loc = (loc + 1) % 10;
+            } while (loc != originalLoc);
+
+            if (!inserted) {
+                cout << "Hash table overflow! Could not insert PRN: " << prn_input << "\n";
+            }
+        }
+    }
+
+    void display() {
+        cout << "Index\tPRN\t\tName\n";
+        for (int i = 0; i < 10; i++) {
+            cout << i << "\t" << (table[i].PRN == "" ? "-" : table[i].PRN) << "\t\t" << (table[i].name == "" ? "-" : table[i].name) << "\n";
+        }
+    }
+
+    void search() {
+        string prn;
+        cout << "Enter PRN to search: ";
+        cin >> prn;
+
+        int loc = hashFunction(prn);
+        int originalLoc = loc;
+
+        do {
+            if (table[loc].PRN == prn) {
+                cout << "Record found at index " << loc << " - Name: " << table[loc].name << "\n";
+                return;
+            }
+            loc = (loc + 1) % 10;
+        } while (loc != originalLoc);
+
+        cout << "Record not found.\n";
+    }
+
+    void modify() {
+        string prn;
+        cout << "Enter PRN to modify: ";
+        cin >> prn;
+
+        int loc = hashFunction(prn);
+        int originalLoc = loc;
+
+        do {
+            if (table[loc].PRN == prn) {
+                cout << "Enter new name: ";
+                cin >> table[loc].name;
+                cout << "Record updated.\n";
+                return;
+            }
+            loc = (loc + 1) % 10;
+        } while (loc != originalLoc);
+
+        cout << "Record not found.\n";
+    }
+
+    void deleteRecord() {
+        string prn;
+        cout << "Enter PRN to delete: ";
+        cin >> prn;
+
+        int loc = hashFunction(prn);
+        int originalLoc = loc;
+
+        do {
+            if (table[loc].PRN == prn) {
+                table[loc].PRN = "";
+                table[loc].name = "";
+                cout << "Record deleted.\n";
+                return;
+            }
+            loc = (loc + 1) % 10;
+        } while (loc != originalLoc);
+
+        cout << "Record not found.\n";
+    }
+};
+
+int main() {
+    HashTable ht;
+    int choice;
+
+    ht.initialize();
+
+    do {
+        cout << "\n1. Insert\n2. Display\n3. Search\n4. Modify\n5. Delete\n6. Exit\nEnter your choice: ";
+        cin >> choice;
+        switch (choice) {
+            case 1: ht.insert(); break;
+            case 2: ht.display(); break;
+            case 3: ht.search(); break;
+            case 4: ht.modify(); break;
+            case 5: ht.deleteRecord(); break;
+            case 6: cout << "Exiting...\n"; break;
+            default: cout << "Invalid choice.\n";
+        }
+    } while (choice != 6);
+
+    return 0;
+}
