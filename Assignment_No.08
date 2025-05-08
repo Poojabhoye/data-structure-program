@@ -1,0 +1,130 @@
+#include <iostream>
+#include <string>
+#include <climits>  
+
+using namespace std;
+
+int n;
+int w[20][20], c[20][20], r[20][20];
+
+class GS {
+    int p[20], q[20];
+    string key[20];
+
+public:
+    void accept();
+    void build();
+    void display();
+    void obst(int, int);
+};
+
+void GS::accept() {
+    cout << "Enter the number of keys: ";
+    cin >> n;
+
+    cout << "Enter the key items in sorted order:\n";
+    for (int i = 1; i <= n; i++) {
+        cin >> key[i];
+    }
+
+    cout << "Enter the successful search probabilities (p):\n";
+    for (int i = 1; i <= n; i++) {
+        cin >> p[i];
+    }
+
+    cout << "Enter the unsuccessful search probabilities (q):\n";
+    for (int i = 0; i <= n; i++) {
+        cin >> q[i];
+    }
+}
+
+void GS::build() {
+    for (int i = 0; i <= n; i++) {
+        w[i][i] = q[i];
+        c[i][i] = 0;
+        r[i][i] = 0;
+    }
+    for (int length = 1; length <= n; length++) {
+        for (int i = 0; i <= n - length; i++) {
+            int j = i + length;
+            w[i][j] = w[i][j - 1] + p[j] + q[j];
+            c[i][j] = INT_MAX;
+
+            for (int k = i + 1; k <= j; k++) {
+                int cost = c[i][k - 1] + c[k][j] + w[i][j];
+                if (cost < c[i][j]) {
+                    c[i][j] = cost;
+                    r[i][j] = k;
+                }
+            }
+        }
+    }
+}
+
+void GS::display() {
+    cout << "\nWeight Matrix (w):\n";
+    for (int i = 0; i <= n; i++) {
+        for (int j = 0; j <= n; j++) {
+            if (i <= j)
+                cout << w[i][j] << "\t";
+            else
+                cout << "-\t";
+        }
+        cout << endl;
+    }
+
+    cout << "\nCost Matrix (c):\n";
+    for (int i = 0; i <= n; i++) {
+        for (int j = 0; j <= n; j++) {
+            if (i <= j)
+                cout << c[i][j] << "\t";
+            else
+                cout << "-\t";
+        }
+        cout << endl;
+    }
+
+    cout << "\nRoot Matrix (r):\n";
+    for (int i = 0; i <= n; i++) {
+        for (int j = 0; j <= n; j++) {
+            if (i <= j)
+                cout << r[i][j] << "\t";
+            else
+                cout << "0\t";
+        }
+        cout << endl;
+    }
+
+    cout << "\nOptimal Binary Search Tree Structure:\n";
+    obst(0, n);
+}
+
+void GS::obst(int i, int j) {
+    int root = r[i][j];
+    if (root == 0) return;
+
+    cout << "Root of subtree [" << i << "," << j << "] is: " << key[root] << endl;
+
+    if (r[i][root - 1] != 0) {
+        cout << "  Left child of " << key[root] << " is: " << key[r[i][root - 1]] << endl;
+    } else {
+        cout << "  Left child of " << key[root] << " is: NULL" << endl;
+    }
+
+    if (r[root][j] != 0) {
+        cout << "  Right child of " << key[root] << " is: " << key[r[root][j]] << endl;
+    } else {
+        cout << "  Right child of " << key[root] << " is: NULL" << endl;
+    }
+
+    obst(i, root - 1);
+    obst(root, j);
+}
+
+int main() {
+    GS g;
+    g.accept();
+    g.build();
+    g.display();
+    return 0;
+}
