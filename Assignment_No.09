@@ -1,0 +1,91 @@
+#include<iostream>
+using namespace std;
+
+class Maxheap {
+    int n;             // number of elements
+    int key[20];       // array to store heap elements (indexing from 1)
+
+public:
+    Maxheap() {
+        n = 0;         // initialize heap size to 0
+    }
+
+    void accept();
+    void build();
+    void insert(int value);
+    void display();
+};
+
+void Maxheap::accept() {
+    cout << "Enter the total number of keys: ";
+    cin >> n;
+
+    cout << "Enter the key values:\n";
+    for (int i = 1; i <= n; i++) {
+        cin >> key[i];
+    }
+
+    build();  // build the max heap from the input values
+}
+
+void Maxheap::build() {
+    for (int i = n / 2; i >= 1; i--) {
+        int k = i;
+        int v = key[k];
+        bool heap = false;
+
+        while (!heap && 2 * k <= n) {
+            int j = 2 * k;
+
+            if (j < n && key[j] < key[j + 1]) {
+                j++;
+            }
+
+            if (v >= key[j]) {
+                heap = true;
+            } else {
+                key[k] = key[j];
+                k = j;
+            }
+        }
+
+        key[k] = v;
+    }
+}
+
+void Maxheap::insert(int value) {
+    if (n >= 19) {
+        cout << "Heap is full.\n";
+        return;
+    }
+
+    n++;
+    int i = n;
+    while (i > 1 && value > key[i / 2]) {
+        key[i] = key[i / 2];
+        i = i / 2;
+    }
+    key[i] = value;
+}
+
+void Maxheap::display() {
+    cout << "Heap elements are: ";
+    for (int i = 1; i <= n; i++) {
+        cout << key[i] << " ";
+    }
+    cout << endl;
+}
+
+int main() {
+    Maxheap h;
+    h.accept();
+    h.display();
+
+    int val;
+    cout << "Enter a value to insert: ";
+    cin >> val;
+    h.insert(val);
+    h.display();
+
+    return 0;
+}
